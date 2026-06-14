@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video-Tracker — Documentación del Proyecto</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --purple: #7c3aed;
+      --purple-light: #ede9fe;
+      --purple-dark: #5b21b6;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-400: #9ca3af;
+      --gray-600: #4b5563;
+      --gray-800: #1f2937;
+      --gray-900: #111827;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--gray-800);
+      background: white;
+      font-size: 11pt;
+      line-height: 1.6;
+    }
+
+    /* ── PORTADA ── */
+    .cover {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #1e1b4b 0%, #4c1d95 50%, #7c3aed 100%);
+      color: white;
+      text-align: center;
+      padding: 60px 40px;
+      page-break-after: always;
+    }
+
+    .cover-badge {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 999px;
+      padding: 6px 20px;
+      font-size: 10pt;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 32px;
+    }
+
+    .cover h1 {
+      font-size: 42pt;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+    }
+
+    .cover h1 span {
+      color: #c4b5fd;
+    }
+
+    .cover .subtitle {
+      font-size: 15pt;
+      font-weight: 300;
+      opacity: 0.85;
+      margin-bottom: 48px;
+    }
+
+    .cover-divider {
+      width: 60px;
+      height: 3px;
+      background: #c4b5fd;
+      border-radius: 2px;
+      margin: 0 auto 48px;
+    }
+
+    .cover-meta {
+      display: flex;
+      gap: 48px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .cover-meta-item {
+      text-align: center;
+    }
+
+    .cover-meta-item .label {
+      font-size: 8pt;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.6;
+      margin-bottom: 4px;
+    }
+
+    .cover-meta-item .value {
+      font-size: 12pt;
+      font-weight: 600;
+    }
+
+    .cover-tech-pills {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 48px;
+    }
+
+    .cover-tech-pills span {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 6px;
+      padding: 4px 14px;
+      font-size: 9pt;
+      font-weight: 500;
+    }
+
+    /* ── CONTENIDO ── */
+    .content {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 50px 50px;
+    }
+
+    /* ── SECCIONES ── */
+    .section {
+      margin-bottom: 48px;
+      page-break-inside: avoid;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--purple-light);
+    }
+
+    .section-number {
+      background: var(--purple);
+      color: white;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10pt;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .section-header h2 {
+      font-size: 15pt;
+      font-weight: 700;
+      color: var(--gray-900);
+    }
+
+    h3 {
+      font-size: 11pt;
+      font-weight: 600;
+      color: var(--purple-dark);
+      margin: 20px 0 8px;
+    }
+
+    p {
+      margin-bottom: 10px;
+      color: var(--gray-600);
+    }
+
+    /* ── TECNOLOGÍAS ── */
+    .tech-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .tech-card {
+      border: 1px solid var(--gray-200);
+      border-radius: 12px;
+      padding: 18px;
+      background: var(--gray-50);
+    }
+
+    .tech-card .tech-name {
+      font-size: 11pt;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 4px;
+    }
+
+    .tech-card .tech-version {
+      font-size: 8pt;
+      color: var(--purple);
+      font-weight: 600;
+      background: var(--purple-light);
+      padding: 2px 8px;
+      border-radius: 999px;
+      display: inline-block;
+      margin-bottom: 8px;
+    }
+
+    .tech-card .tech-desc {
+      font-size: 9pt;
+      color: var(--gray-600);
+      line-height: 1.5;
+    }
+
+    /* ── TABLA ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 9.5pt;
+      margin: 12px 0;
+    }
+
+    thead tr {
+      background: var(--purple);
+      color: white;
+    }
+
+    thead th {
+      padding: 10px 14px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 9pt;
+    }
+
+    tbody tr:nth-child(even) { background: var(--gray-50); }
+    tbody tr:hover { background: var(--purple-light); }
+
+    tbody td {
+      padding: 9px 14px;
+      border-bottom: 1px solid var(--gray-200);
+      color: var(--gray-600);
+    }
+
+    tbody td:first-child {
+      font-weight: 600;
+      color: var(--gray-900);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8.5pt;
+    }
+
+    /* ── CÓDIGO ── */
+    pre {
+      background: #1e1b4b;
+      color: #e2e8f0;
+      border-radius: 10px;
+      padding: 16px 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8.5pt;
+      line-height: 1.6;
+      overflow-x: auto;
+      margin: 12px 0;
+      border-left: 3px solid var(--purple);
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--purple-light);
+      color: var(--purple-dark);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 8.5pt;
+    }
+
+    /* ── LISTA ── */
+    ul, ol {
+      padding-left: 20px;
+      margin: 8px 0;
+      color: var(--gray-600);
+    }
+
+    li {
+      margin-bottom: 4px;
+      font-size: 10pt;
+    }
+
+    /* ── BADGES ── */
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 8pt;
+      font-weight: 600;
+    }
+
+    .badge-green  { background: #d1fae5; color: #065f46; }
+    .badge-purple { background: var(--purple-light); color: var(--purple-dark); }
+    .badge-blue   { background: #dbeafe; color: #1e40af; }
+    .badge-orange { background: #ffedd5; color: #9a3412; }
+
+    /* ── DIAGRAMA BD ── */
+    .db-diagram {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: 12px;
+      padding: 24px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8.5pt;
+      line-height: 1.8;
+      color: var(--gray-800);
+    }
+
+    .db-table-name {
+      font-weight: 700;
+      color: var(--purple);
+    }
+
+    /* ── HIGHLIGHT BOXES ── */
+    .highlight-box {
+      background: var(--purple-light);
+      border-left: 4px solid var(--purple);
+      border-radius: 0 8px 8px 0;
+      padding: 14px 18px;
+      margin: 14px 0;
+    }
+
+    .highlight-box p {
+      color: var(--purple-dark);
+      font-size: 10pt;
+      margin: 0;
+    }
+
+    .info-box {
+      background: #dbeafe;
+      border-left: 4px solid #3b82f6;
+      border-radius: 0 8px 8px 0;
+      padding: 14px 18px;
+      margin: 14px 0;
+    }
+
+    .info-box p {
+      color: #1e40af;
+      font-size: 10pt;
+      margin: 0;
+    }
+
+    /* ── FUNCIONALIDADES ── */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .feature-card {
+      border: 1px solid var(--gray-200);
+      border-radius: 10px;
+      padding: 16px;
+    }
+
+    .feature-card .feature-icon {
+      font-size: 18pt;
+      margin-bottom: 8px;
+    }
+
+    .feature-card .feature-title {
+      font-size: 10pt;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 6px;
+    }
+
+    .feature-card .feature-desc {
+      font-size: 9pt;
+      color: var(--gray-600);
+      line-height: 1.5;
+    }
+
+    /* ── PRINT ── */
+    @media print {
+      body { font-size: 10pt; }
+      .cover { min-height: 100vh; }
+      .section { page-break-inside: avoid; }
+      pre { page-break-inside: avoid; }
+      .tech-grid { page-break-inside: avoid; }
+      .feature-grid { page-break-inside: avoid; }
+      a { text-decoration: none; color: inherit; }
+    }
+
+    @page {
+      margin: 0;
+    }
+
+    .page-content {
+      padding: 50px 60px;
+    }
+
+    .page-footer {
+      text-align: center;
+      font-size: 8pt;
+      color: var(--gray-400);
+      padding: 20px;
+      border-top: 1px solid var(--gray-200);
+      margin-top: 40px;
+    }
+
+    .inline-check { color: #10b981; font-weight: 700; }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════════
+       PORTADA
+  ══════════════════════════════════════════ -->
+  <div class="cover">
+    <div class="cover-badge">Proyecto Laravel — Desarrollo de Aplicaciones Web</div>
+    <h1>Video<span>Tracker</span></h1>
+    <p class="subtitle">Aplicación CRUD de gestión de biblioteca personal de videojuegos</p>
+    <div class="cover-divider"></div>
+    <div class="cover-meta">
+      <div class="cover-meta-item">
+        <div class="label">Autor</div>
+        <div class="value">Francisco Romero</div>
+      </div>
+      <div class="cover-meta-item">
+        <div class="label">Framework</div>
+        <div class="value">Laravel 12</div>
+      </div>
+      <div class="cover-meta-item">
+        <div class="label">PHP</div>
+        <div class="value">8.3</div>
+      </div>
+      <div class="cover-meta-item">
+        <div class="label">Curso</div>
+        <div class="value">2025 — 2026</div>
+      </div>
+    </div>
+    <div class="cover-tech-pills">
+      <span>Laravel 12</span>
+      <span>PHP 8.3</span>
+      <span>MySQL</span>
+      <span>Blade</span>
+      <span>Tailwind CSS</span>
+      <span>Alpine.js</span>
+      <span>Breeze</span>
+      <span>IGDB API</span>
+      <span>Eloquent ORM</span>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       CONTENIDO
+  ══════════════════════════════════════════ -->
+  <div class="page-content">
+
+    <!-- 1. DESCRIPCIÓN -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-number">1</div>
+        <h2>Descripción del Proyecto</h2>
+      </div>
+
+      <p>
+        <strong>VideoTracker</strong> es una aplicación web desarrollada con Laravel 12 que permite a los usuarios gestionar su biblioteca personal de videojuegos. Cada usuario puede llevar un registro de los juegos que ha jugado, está jugando o tiene pendientes, puntuarlos, comentarlos y desbloquear logros asociados a cada título.
+      </p>
+      <p>
+        La aplicación combina un catálogo global compartido entre todos los usuarios con una biblioteca personal para cada uno. Los juegos del catálogo se pueden importar directamente desde la API oficial de IGDB (Internet Games Database), la base de datos de videojuegos de Twitch.
+      </p>
+
+      <div class="highlight-box">
+        <p>El proyecto implementa todos los requisitos mínimos del CRUD en Laravel y además incorpora características avanzadas como autenticación con Breeze, middleware propio, relaciones many-to-many con tabla pivot, integración con API externa mediante OAuth2 y reactividad en frontend con Alpine.js.</p>
+      </div>
+
+      <h3>Funcionalidades principales</h3>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">📚</div>
+          <div class="feature-title">Biblioteca Personal</div>
+          <div class="feature-desc">Cada usuario gestiona su propia colección: añade juegos, les asigna nota, plataforma y estado (Pendiente, Jugando, Completado, Abandonado).</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🌐</div>
+          <div class="feature-title">Catálogo Global</div>
+          <div class="feature-desc">Base de datos compartida de juegos con búsqueda por título, filtrado por género, paginación y nota media calculada entre todos los usuarios.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔍</div>
+          <div class="feature-title">Búsqueda IGDB en Tiempo Real</div>
+          <div class="feature-desc">Al crear un juego, el formulario busca en la API de IGDB según el usuario escribe, mostrando resultados con portada y género sin recargar la página.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🏆</div>
+          <div class="feature-title">Sistema de Logros</div>
+          <div class="feature-desc">Cada juego genera automáticamente 20 logros (Bronce, Plata, Oro, Platino) al crearse. Los usuarios pueden marcarlos como desbloqueados.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">💬</div>
+          <div class="feature-title">Comentarios</div>
+          <div class="feature-desc">Sistema de comentarios por juego en la vista de detalle, con usuario y fecha de publicación.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <div class="feature-title">Dashboard de Estadísticas</div>
+          <div class="feature-desc">Página de inicio con resumen de la colección del usuario: total de juegos, jugando actualmente y completados.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. TECNOLOGÍAS -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-number">2</div>
+        <h2>Tecnologías Utilizadas</h2>
+      </div>
+
+      <div class="tech-grid">
+
+        <div class="tech-card">
+          <div class="tech-name">Laravel</div>
+          <div class="tech-version">v12.x</div>
+          <div class="tech-desc">Framework PHP principal. Proporciona el sistema de rutas, controladores, Eloquent ORM, sistema de migraciones, validación, autenticación y motor de plantillas Blade.</div>
+        </div>
+
+        <div class="tech-card">
+          <div class="tech-name">PHP</div>
+          <div class="tech-version">8.3</div>
+          <div class="tech-desc">Lenguaje de backend. Se aprovechan características modernas como <code>match()</code>, propiedades readonly, tipos de retorno y named arguments.</div>
+        </div>
+
+        <div class="tech-card">
+          <div class="tech-name">MySQL</div>
+          <div class="tech-version">Base de datos</div>
+          <div class="tech-desc">Sistema de gestión de base de datos relacional. Almacena usuarios, juegos, biblioteca personal, comentarios, logros y relaciones entre ellos.</div>
+        </div>
+
+        <div class="tech-card">
+          <div class="tech-name">Blade</div>
+          <div class="tech-version">Motor de plantillas</div>
+          <div class="tech-desc">Motor de vistas de Laravel. Permite usar directivas (<code>@foreach</code>, <code>@if</code>, <code>@auth</code>) y layouts reutilizables en lugar de PHP incrustado.</div>
+        </div>
+
+        <div class="tech-card">
+          <div class="tech-name">Tailwind CSS</div>
+          <div class="tech-version">v3.x</div>
+          <div class="tech-desc">Framework de CSS utilitario. Permite construir interfaces modernas directamente en el HTML sin escribir ficheros CSS personalizados, con diseño responsive incluido.</div>
+        </div>
+
+        <div class="tech-card">
+          <div class="tech-name">Alpine.js</div>
+          <div class="tech-version">v3.x</div>
+          <div class="tech-desc">Librería JavaScript ligera para añadir interactividad en el frontend. Se usa para la búsqueda en tiempo real en IGDB y el filtrado de juegos en el catálogo.</div>
+        </div>
+
+        <div class="tech-card">
+          <div class="tech-name">Laravel Breeze</div>
+          <div class="tech-version">Starter Kit</div>
+          <div class="tech-desc">Paquete oficial de Laravel para autenticación. Proporciona registro, login, recuperación de contraseña, verificación de email y gestión de perfil. Personalizado con estilos propios en español.</div>
+        </div>
+
+        <div class="tech-card">
+          <div class="tech-name">IGDB API</div>
+          <div class="tech-version">API externa (Twitch)</div>
+          <div class="tech-desc">Base de datos oficial de videojuegos de Twitch. Se integra mediante OAuth2 para buscar juegos reales con portada y género de forma automática.</div>
+        </div>
+
+        <div class="tech-card">
+          <div class="tech-name">Vite</div>
+          <div class="tech-version">v7.x</div>
+          <div class="tech-desc">Bundler de assets moderno. Compila y optimiza los ficheros CSS y JavaScript del frontend en modo desarrollo y producción.</div>
+        </div>
+
+        <div class="tech-card">
+          <div class="tech-name">Faker (PHP)</div>
+          <div class="tech-version">Generación de datos</div>
+          <div class="tech-desc">Librería integrada en Laravel para generar datos de prueba realistas. Utilizada en Factories para crear juegos, logros y usuarios de desarrollo automáticamente.</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 3. BASE DE DATOS -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-number">3</div>
+        <h2>Estructura de la Base de Datos</h2>
+      </div>
+
+      <p>El proyecto cuenta con <strong>6 tablas propias</strong> más las de Laravel (cache, jobs, password_resets). Las relaciones entre ellas modelan que un usuario puede tener muchos juegos en su biblioteca y que un mismo juego puede pertenecer a muchos usuarios con datos distintos para cada uno.</p>
+
+      <div class="db-diagram">
+<span class="db-table-name">users</span>              id, name, email, password, remember_token, timestamps
+<span class="db-table-name">games</span>              id, titulo (unique), genero, portada, portada_url, igdb_id, timestamps
+<span class="db-table-name">videogames</span>         id, user_id → users, game_id → games, plataforma, puntuacion_personal, estado, timestamps
+<span class="db-table-name">comments</span>           id, user_id → users, game_id → games, contenido, timestamps
+<span class="db-table-name">achievements</span>       id, game_id → games, nombre, descripcion, imagen_url, timestamps
+<span class="db-table-name">achievement_user</span>   id, user_id → users, achievement_id → achievements, timestamps
+
+Relaciones:
+  User         ──&lt; videogames &gt;──  Game        (many-to-many con datos en pivot)
+  User         ──&lt; achievement_user &gt;──  Achievement (many-to-many)
+  Game         ──&lt; comments              (one-to-many)
+  Game         ──&lt; achievements          (one-to-many)
+      </div>
+
+      <h3>Tabla pivot <code>videogames</code></h3>
+      <p>Es el núcleo del proyecto. No es solo una tabla de enlace: almacena los datos personales de cada usuario para cada juego (nota, plataforma y estado). Esto permite que dos usuarios tengan el mismo juego con notas y estados distintos.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Columna</th>
+            <th>Tipo</th>
+            <th>Descripción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>user_id</td><td>foreignId</td><td>Usuario propietario (cascade delete)</td></tr>
+          <tr><td>game_id</td><td>foreignId</td><td>Juego referenciado (cascade delete)</td></tr>
+          <tr><td>plataforma</td><td>string</td><td>PC, PS5, PS4, Xbox, Switch</td></tr>
+          <tr><td>puntuacion_personal</td><td>decimal(3,1)</td><td>Nota del usuario (0.0 – 10.0)</td></tr>
+          <tr><td>estado</td><td>enum</td><td>Pendiente / Jugando / Completado / Abandonado</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 4. ARQUITECTURA MVC -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-number">4</div>
+        <h2>Arquitectura MVC</h2>
+      </div>
+
+      <p>El proyecto sigue el patrón <strong>Modelo — Vista — Controlador</strong> de forma estricta:</p>
+
+      <h3>Modelos (<code>app/Models/</code>)</h3>
+      <table>
+        <thead><tr><th>Modelo</th><th>Tabla</th><th>Relaciones definidas</th></tr></thead>
+        <tbody>
+          <tr><td>User</td><td>users</td><td>belongsToMany Game (vía videogames), belongsToMany Achievement</td></tr>
+          <tr><td>Game</td><td>games</td><td>hasMany Videogame, hasMany Comment, hasMany Achievement</td></tr>
+          <tr><td>Videogame</td><td>videogames</td><td>belongsTo User, belongsTo Game</td></tr>
+          <tr><td>Achievement</td><td>achievements</td><td>belongsTo Game, belongsToMany User</td></tr>
+          <tr><td>Comment</td><td>comments</td><td>belongsTo User, belongsTo Game</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Controladores (<code>app/Http/Controllers/</code>)</h3>
+      <table>
+        <thead><tr><th>Controlador</th><th>Métodos</th><th>Responsabilidad</th></tr></thead>
+        <tbody>
+          <tr><td>VideogameController</td><td>index, create, store, show, edit, update, destroy, votar, searchIgdb, toggleAchievement, catalogo</td><td>CRUD completo + lógica de negocio principal</td></tr>
+          <tr><td>CommentController</td><td>store</td><td>Publicar comentarios en juegos</td></tr>
+          <tr><td>ProfileController</td><td>edit, update, destroy</td><td>Gestión de cuenta de usuario</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Vistas (<code>resources/views/</code>)</h3>
+      <table>
+        <thead><tr><th>Vista</th><th>Descripción</th></tr></thead>
+        <tbody>
+          <tr><td>dashboard.blade.php</td><td>Panel de inicio con estadísticas personales</td></tr>
+          <tr><td>biblioteca.blade.php</td><td>Lista de juegos del usuario con opciones de editar y borrar</td></tr>
+          <tr><td>catalogo.blade.php</td><td>Catálogo global con búsqueda, filtros y formulario de votación</td></tr>
+          <tr><td>create.blade.php</td><td>Formulario de creación con búsqueda IGDB en tiempo real</td></tr>
+          <tr><td>edit.blade.php</td><td>Formulario de edición de entrada personal</td></tr>
+          <tr><td>show.blade.php</td><td>Vista de detalle: logros, comentarios y nota media</td></tr>
+          <tr><td>layouts/app.blade.php</td><td>Layout principal con navegación</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 5. RUTAS Y MIDDLEWARE -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-number">5</div>
+        <h2>Rutas y Middleware</h2>
+      </div>
+
+      <p>Todas las rutas de la aplicación están protegidas con el middleware <code>auth</code> de Laravel. Las rutas de edición y eliminación añaden además un middleware propio que verifica la propiedad del recurso.</p>
+
+      <pre>// Grupo principal: requiere autenticación
+Route::middleware(['auth'])->group(function () {
+
+    Route::get('/dashboard', ...)->name('dashboard');
+    Route::get('/biblioteca',  [VideogameController::class, 'index'])->name('videogames.index');
+    Route::get('/catalogo',    [VideogameController::class, 'catalogo'])->name('videogames.catalogo');
+    Route::post('/votar/{game_id}', [VideogameController::class, 'votar'])->name('videogames.votar');
+    Route::get('/juegos/{id}', [VideogameController::class, 'show'])->name('games.show');
+
+    // Subgrupo: requiere además ser propietario del juego
+    Route::middleware(['game.owner'])->group(function () {
+        Route::get('/videojuegos/{id}/editar', ...)->name('videogames.edit');
+        Route::put('/videojuegos/{id}',        ...)->name('videogames.update');
+        Route::delete('/videojuegos/{id}',     ...)->name('videogames.destroy');
+    });
+});</pre>
+
+      <h3>Middleware <code>CheckGameOwner</code></h3>
+      <p>Middleware propio registrado como <code>game.owner</code>. Comprueba que el <code>user_id</code> del registro coincida con el usuario autenticado antes de permitir editar o eliminar:</p>
+
+      <pre>public function handle(Request $request, Closure $next): Response
+{
+    $videojuego = Videogame::find($request->route('id'));
+
+    if ($videojuego && $videojuego->user_id !== Auth::id()) {
+        abort(403, 'Acceso denegado: Este videojuego no te pertenece.');
+    }
+
+    return $next($request);
+}</pre>
+
+      <div class="info-box">
+        <p>Gracias a este middleware es imposible que un usuario edite o borre el juego de otro aunque conozca la URL directa, sin necesidad de comprobar esto en cada controlador individualmente.</p>
+      </div>
+    </div>
+
+    <!-- 6. ELOQUENT DESTACADO -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-number">6</div>
+        <h2>Características Destacadas de Eloquent ORM</h2>
+      </div>
+
+      <h3><code>firstOrCreate</code> — evitar duplicados en el catálogo</h3>
+      <p>Cuando un usuario añade un juego, se busca en la tabla global por título. Si no existe se crea; si ya existe se reutiliza. Así el catálogo no tiene duplicados aunque dos usuarios añadan el mismo título.</p>
+      <pre>$game = Game::firstOrCreate(
+    ['titulo' => $validated['titulo']],
+    ['genero' => $validated['genero'], 'portada_url' => $request->portada_url]
+);</pre>
+
+      <h3><code>updateOrCreate</code> — upsert en la biblioteca personal</h3>
+      <p>Si el usuario ya tiene ese juego en su biblioteca, actualiza los datos. Si no, lo crea. Evita la lógica manual de buscar primero y decidir después.</p>
+      <pre>Videogame::updateOrCreate(
+    ['user_id' => Auth::id(), 'game_id' => $game->id],
+    ['plataforma' => $validated['plataforma'], 'estado' => $validated['estado']]
+);</pre>
+
+      <h3><code>->when()</code> — filtros condicionales encadenados</h3>
+      <p>Aplica un <code>where</code> solo si la condición es verdadera. Si el usuario no ha escrito en el buscador, ese filtro no se añade a la consulta.</p>
+      <pre>Game::query()
+    ->when($buscar, fn($q) => $q->where('titulo', 'LIKE', "%{$buscar}%"))
+    ->when($genero, fn($q) => $q->where('genero', $genero))
+    ->paginate(6)
+    ->withQueryString();</pre>
+
+      <h3>Eager loading <code>->with()</code> — evitar el problema N+1</h3>
+      <p>Carga todas las relaciones necesarias en una sola consulta, evitando que Laravel haga una query por cada comentario para buscar su autor.</p>
+      <pre>$juego = Game::with(['comments.user', 'achievements'])->findOrFail($id);</pre>
+
+      <h3><code>toggle()</code> en relación many-to-many</h3>
+      <p>Marca o desmarca un logro para el usuario en la tabla pivot <code>achievement_user</code> de forma automática, sin comprobar si existe previamente.</p>
+      <pre>$user->achievements()->toggle($id);</pre>
+    </div>
+
+    <!-- 7. INTEGRACIÓN IGDB -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-number">7</div>
+        <h2>Integración con la API de IGDB</h2>
+      </div>
+
+      <p>IGDB (Internet Games Database) es la base de datos oficial de videojuegos de Twitch. La aplicación la integra para permitir buscar y autocompletar juegos reales con su portada y género.</p>
+
+      <h3>Autenticación OAuth2</h3>
+      <p>Antes de cada búsqueda se solicita un token de acceso temporal a los servidores de Twitch usando las credenciales de la aplicación:</p>
+      <pre>$response = Http::post('https://id.twitch.tv/oauth2/token', [
+    'client_id'     => config('services.igdb.client_id'),
+    'client_secret' => config('services.igdb.client_secret'),
+    'grant_type'    => 'client_credentials',
+]);
+$token = $response->json()['access_token'];</pre>
+
+      <h3>Consulta a la API</h3>
+      <p>Con el token obtenido se realiza la búsqueda usando el cliente HTTP de Laravel:</p>
+      <pre>Http::withHeaders([
+    'Client-ID'     => config('services.igdb.client_id'),
+    'Authorization' => 'Bearer ' . $token,
+])->withBody("search \"{$search}\"; fields name, cover.url, genres.name, id; limit 5;", 'text/plain')
+  ->post('https://api.igdb.com/v4/games');</pre>
+
+      <h3>Búsqueda en tiempo real con Alpine.js</h3>
+      <p>El formulario de creación de juegos muestra resultados mientras el usuario escribe, sin recargar la página, usando Alpine.js para hacer la petición al endpoint interno:</p>
+      <pre>// En la vista create.blade.php
+&lt;div x-data="{ query: '', results: [] }"&gt;
+    &lt;input @input.debounce.500ms="fetchGames()" x-model="query" /&gt;
+
+    &lt;template x-for="game in results"&gt;
+        &lt;div @click="selectGame(game)" x-text="game.name"&gt;&lt;/div&gt;
+    &lt;/template&gt;
+&lt;/div&gt;</pre>
+
+      <div class="info-box">
+        <p>El <code>debounce.500ms</code> espera a que el usuario deje de escribir durante medio segundo antes de lanzar la petición, evitando llamadas innecesarias a la API por cada letra.</p>
+      </div>
+    </div>
+
+    <!-- 8. FACTORIES Y SEEDERS -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-number">8</div>
+        <h2>Factories y Seeders</h2>
+      </div>
+
+      <p>Para facilitar el desarrollo y las pruebas, el proyecto incluye factories y un seeder que generan datos realistas con un solo comando (<code>php artisan db:seed</code>).</p>
+
+      <h3>DatabaseSeeder</h3>
+      <p>Crea un usuario de prueba, 10 juegos con 20 logros cada uno, y los relaciona todos al usuario:</p>
+      <pre>// Crea usuario de prueba
+$user = User::factory()->create([
+    'email' => 'test@example.com',
+    'password' => bcrypt('password'),
+]);
+
+// Crea 10 juegos, cada uno con 20 logros asociados
+$juegos = Game::factory(10)
+    ->has(Achievement::factory()->count(20), 'achievements')
+    ->create();
+
+// Relaciona cada juego al usuario con datos aleatorios
+foreach ($juegos as $juego) {
+    Videogame::create([
+        'user_id'            => $user->id,
+        'game_id'            => $juego->id,
+        'plataforma'         => collect(['PC', 'PS5', 'Xbox', 'Switch'])->random(),
+        'puntuacion_personal'=> rand(5, 10),
+        'estado'             => collect(['Jugando', 'Completado', 'Pendiente'])->random(),
+    ]);
+}</pre>
+
+      <h3>GameFactory</h3>
+      <p>Genera juegos con títulos únicos, géneros aleatorios de una lista predefinida e IDs de IGDB únicos:</p>
+      <pre>return [
+    'titulo'    => $this->faker->unique()->words(3, true),
+    'genero'    => $this->faker->randomElement(['RPG', 'Acción', 'Aventura', 'Shooter', 'Terror', 'Indie']),
+    'portada_url' => 'https://placehold.co/600x800?text=Game+Cover',
+    'igdb_id'   => $this->faker->unique()->numberBetween(100, 999999),
+];</pre>
+    </div>
+
+    <!-- 9. REQUISITOS CUMPLIDOS -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-number">9</div>
+        <h2>Cumplimiento de Requisitos</h2>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Requisito</th>
+            <th>Estado</th>
+            <th>Dónde</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Rutas con nombre y parámetros</td>
+            <td><span class="badge badge-green">✓ Cumplido</span></td>
+            <td>routes/web.php</td>
+          </tr>
+          <tr>
+            <td>Migraciones para las tablas</td>
+            <td><span class="badge badge-green">✓ Cumplido</span></td>
+            <td>database/migrations/ (8 migraciones)</td>
+          </tr>
+          <tr>
+            <td>Modelos con Eloquent ORM</td>
+            <td><span class="badge badge-green">✓ Cumplido</span></td>
+            <td>app/Models/ (5 modelos)</td>
+          </tr>
+          <tr>
+            <td>Convenciones de nombres</td>
+            <td><span class="badge badge-green">✓ Cumplido</span></td>
+            <td>Tablas, modelos, controladores, métodos</td>
+          </tr>
+          <tr>
+            <td>Vistas con Blade</td>
+            <td><span class="badge badge-green">✓ Cumplido</span></td>
+            <td>resources/views/ (6 vistas + layouts)</td>
+          </tr>
+          <tr>
+            <td>Varias tablas relacionadas</td>
+            <td><span class="badge badge-purple">✓ Extra</span></td>
+            <td>6 tablas, 3 tipos de relaciones</td>
+          </tr>
+          <tr>
+            <td>Control de usuarios (Breeze)</td>
+            <td><span class="badge badge-purple">✓ Extra</span></td>
+            <td>Login, registro, perfil, recuperación</td>
+          </tr>
+          <tr>
+            <td>Factories y Seeders</td>
+            <td><span class="badge badge-purple">✓ Extra</span></td>
+            <td>GameFactory, AchievementFactory, DatabaseSeeder</td>
+          </tr>
+          <tr>
+            <td>Plantillas y estilos CSS</td>
+            <td><span class="badge badge-purple">✓ Extra</span></td>
+            <td>Tailwind CSS + layouts Blade</td>
+          </tr>
+          <tr>
+            <td>Middleware propio</td>
+            <td><span class="badge badge-purple">✓ Extra</span></td>
+            <td>CheckGameOwner.php</td>
+          </tr>
+          <tr>
+            <td>API externa (no vista en clase)</td>
+            <td><span class="badge badge-blue">✓ Avanzado</span></td>
+            <td>IGDB API con OAuth2</td>
+          </tr>
+          <tr>
+            <td>Interactividad frontend (Alpine.js)</td>
+            <td><span class="badge badge-blue">✓ Avanzado</span></td>
+            <td>Búsqueda tiempo real, filtros</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="page-footer">
+      VideoTracker &mdash; Francisco Romero &mdash; Proyecto Laravel 2025/2026
+    </div>
+
+  </div>
+</body>
+</html>

@@ -5,12 +5,28 @@ namespace App\Http\Controllers;
 use App\Models\Videogame;
 use App\Models\Game;
 use App\Models\Achievement;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 
 class VideogameController extends Controller
 {
+    public function dashboard()
+    {
+        $user_id = Auth::id();
+        $stats = [
+            'total'      => Videogame::where('user_id', $user_id)->count(),
+            'jugando'    => Videogame::where('user_id', $user_id)->where('estado', 'Jugando')->count(),
+            'completados'=> Videogame::where('user_id', $user_id)->where('estado', 'Completado')->count(),
+        ];
+        $ultimosJuegosGlobales = Game::withAvg('videogames', 'puntuacion_personal')
+            ->latest()
+            ->take(5)
+            ->get();
+        return view('dashboard', compact('ultimosJuegosGlobales', 'stats'));
+    }
+
     public function index()
     {
         //carga la biblioteca del usuario
@@ -91,7 +107,7 @@ class VideogameController extends Controller
         $buscar = $request->input('search');
         $genero = $request->input('genero');
 
-        $juegosGlobales = Game::query()
+        $juegosGlobales = Game::withAvg('videogames', 'puntuacion_personal')
             ->when($buscar, function ($query) use ($buscar) {
                 return $query->where('titulo', 'LIKE', "%{$buscar}%");
             })
@@ -99,7 +115,7 @@ class VideogameController extends Controller
                 return $query->where('genero', $genero);
             })
             ->paginate(6)
-            ->withQueryString(); 
+            ->withQueryString();
 
         return view('catalogo', compact('juegosGlobales'));
     }
@@ -134,12 +150,33 @@ class VideogameController extends Controller
     {
         $videojuego = Videogame::where('user_id', Auth::id())->findOrFail($id);
         $validated = $request->validate([
-            'puntuacion_personal' => 'required|numeric|min:0|max:10',
-            'estado' => 'required',
-            'plataforma' => 'required'
+            'puntuacion_personal'  => 'required|numeric|min:0|max:10',
+            'estado'               => 'required',
+            'plataforma'           => 'required',
+            'nota_grafica'         => 'nullable|numeric|min:0|max:10',
+            'nota_historia'        => 'nullable|numeric|min:0|max:10',
+            'nota_jugabilidad'     => 'nullable|numeric|min:0|max:10',
+            'nota_duracion'        => 'nullable|numeric|min:0|max:10',
         ]);
         $videojuego->update($validated);
         return redirect()->route('videogames.index')->with('success', '¡Juego actualizado!');
+    }
+
+    public function exportPdf()
+    {
+        $user        = Auth::user();
+        $videojuegos = Videogame::with('game')->where('user_id', $user->id)->get();
+        $stats = [
+            'total'       => $videojuegos->count(),
+            'completados' => $videojuegos->where('estado', 'Completado')->count(),
+            'jugando'     => $videojuegos->where('estado', 'Jugando')->count(),
+            'nota_media'  => $videojuegos->avg('puntuacion_personal') ?? 0,
+        ];
+
+        $pdf = Pdf::loadView('pdf.biblioteca', compact('user', 'videojuegos', 'stats'))
+            ->setPaper('a4', 'landscape');
+
+        return $pdf->download("biblioteca-{$user->name}.pdf");
     }
 
     public function destroy($id)
@@ -152,8 +189,17 @@ class VideogameController extends Controller
     public function show($id)
     {
         $juego = Game::with(['comments.user', 'achievements'])->findOrFail($id);
+        $user  = Auth::user()->load('achievements', 'games');
 
-        return view('show', compact('juego'));
+        $misLogrosIds        = $user->achievements->pluck('id')->toArray();
+        $loTengoEnBiblioteca = $user->games->contains('id', (int) $id);
+
+        $vidId = null;
+        if ($loTengoEnBiblioteca) {
+            $vidId = Videogame::where('user_id', $user->id)->where('game_id', $id)->value('id');
+        }
+
+        return view('show', compact('juego', 'misLogrosIds', 'loTengoEnBiblioteca', 'vidId'));
     }
 
     private function getIgdbToken()

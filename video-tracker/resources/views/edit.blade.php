@@ -1,64 +1,101 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-black text-3xl text-gray-800 tracking-tighter uppercase leading-tight italic">
-            ACTUALIZAR <span class="text-purple-600">REGISTRO</span>
-        </h2>
-    </x-slot>
+<div class="bg-slate-50 min-h-screen">
 
-    <div class="py-12 bg-gray-50 min-h-screen">
-        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white p-10 rounded-[2.5rem] shadow-xl border border-gray-100">
-                <div class="mb-8 border-b border-gray-50 pb-6 text-center">
-                     <p class="text-sm text-gray-400 uppercase font-bold tracking-widest">Editando ficha de:</p>
-                     <h3 class="text-2xl font-black text-indigo-600 italic mt-1">{{ $videojuego->game->titulo }}</h3>
-                </div>
+    <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
-                <form action="{{ route('videogames.update', $videojuego->id) }}" method="POST" class="space-y-8">
-                    @csrf
-                    @method('PUT')
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block font-black text-xs uppercase tracking-widest text-gray-500 mb-2">Plataforma</label>
-                            <select name="plataforma" class="w-full rounded-xl bg-gray-50 border-gray-200 text-gray-700 focus:ring-purple-500 focus:border-purple-500 shadow-sm font-bold text-sm py-3">
-                                <option value="PC" {{ $videojuego->plataforma == 'PC' ? 'selected' : '' }}>PC</option>
-                                <option value="PS5" {{ $videojuego->plataforma == 'PS5' ? 'selected' : '' }}>PlayStation 5</option>
-                                <option value="PS4" {{ $videojuego->plataforma == 'PS4' ? 'selected' : '' }}>PlayStation 4</option>
-                                <option value="Xbox" {{ $videojuego->plataforma == 'Xbox' ? 'selected' : '' }}>Xbox Series X/S</option>
-                                <option value="Switch" {{ $videojuego->plataforma == 'Switch' ? 'selected' : '' }}>Nintendo Switch</option>
-                            </select>
-                        </div>
-                        
-                        <div>
-                            <label class="block font-black text-xs uppercase tracking-widest text-gray-500 mb-2">Estado del juego</label>
-                            <select name="estado" class="w-full rounded-xl bg-gray-50 border-gray-200 text-gray-700 focus:ring-purple-500 focus:border-purple-500 shadow-sm font-bold text-sm py-3">
-                                <option value="Pendiente" {{ $videojuego->estado == 'Pendiente' ? 'selected' : '' }}>⏳ Pendiente (Backlog)</option>
-                                <option value="Jugando" {{ $videojuego->estado == 'Jugando' ? 'selected' : '' }}>🕹️ Jugando ahora</option>
-                                <option value="Completado" {{ $videojuego->estado == 'Completado' ? 'selected' : '' }}>✅ Completado al 100%</option>
-                                <option value="Abandonado" {{ $videojuego->estado == 'Abandonado' ? 'selected' : '' }}>❌ Abandonado</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="bg-purple-50 p-8 rounded-3xl border border-purple-100">
-                        <label class="block font-black text-xs uppercase tracking-widest text-purple-700 mb-4 text-center">Tu puntuación personal (0 - 10)</label>
-                        <div class="flex items-center justify-center">
-                            <input type="number" name="puntuacion_personal" step="0.1" value="{{ $videojuego->puntuacion_personal }}" 
-                                   class="w-40 rounded-2xl bg-white border-purple-200 text-center text-5xl font-black text-purple-600 focus:ring-purple-500 focus:border-purple-500 shadow-md h-24"
-                                   required>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center justify-center gap-6 pt-6">
-                        <a href="{{ route('videogames.index') }}" class="px-6 py-3 text-gray-400 hover:text-gray-600 text-xs font-black uppercase tracking-widest transition">
-                            Cancelar
-                        </a>
-                        <button type="submit" class="px-10 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-purple-200 transition transform active:scale-95">
-                            Guardar Cambios
-                        </button>
-                    </div>
-                </form>
-            </div>
+        {{-- Header --}}
+        <div class="mb-8">
+            <a href="{{ route('videogames.index') }}" class="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-slate-600 transition mb-4">
+                <x-heroicon-o-arrow-left class="w-4 h-4" /> Volver a la biblioteca
+            </a>
+            <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Editar registro</h1>
+            <p class="text-slate-400 text-sm mt-0.5">{{ $videojuego->game->titulo }}</p>
         </div>
+
+        <form action="{{ route('videogames.update', $videojuego->id) }}" method="POST" class="space-y-6">
+            @csrf @method('PUT')
+
+            {{-- Estado y plataforma --}}
+            <div class="bg-white border border-slate-100 rounded-2xl p-6 space-y-4">
+                <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Datos del juego</h2>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Plataforma</label>
+                        <select name="plataforma" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-slate-50 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition">
+                            @foreach(['PC','PS5','PS4','Xbox','Switch'] as $p)
+                                <option value="{{ $p }}" {{ $videojuego->plataforma == $p ? 'selected' : '' }}>{{ $p }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Estado</label>
+                        <select name="estado" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-slate-50 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition">
+                            @foreach(['Pendiente' => 'Pendiente', 'Jugando' => 'Jugando ahora', 'Completado' => 'Completado', 'Abandonado' => 'Abandonado'] as $val => $label)
+                                <option value="{{ $val }}" {{ $videojuego->estado == $val ? 'selected' : '' }}>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Nota global --}}
+            <div class="bg-white border border-slate-100 rounded-2xl p-6">
+                <label class="block text-sm font-semibold text-slate-700 mb-4 flex items-center gap-2">
+                    <x-heroicon-s-star class="w-4 h-4 text-amber-400" /> Puntuación global
+                </label>
+                <div class="flex items-center justify-center gap-4">
+                    <input type="range" name="puntuacion_personal" min="0" max="10" step="0.1"
+                           value="{{ $videojuego->puntuacion_personal }}"
+                           x-data x-ref="slider" x-model="$el.value"
+                           @input="$refs.display.textContent = parseFloat($el.value).toFixed(1)"
+                           class="flex-1 accent-violet-600 cursor-pointer">
+                    <span x-data="{ v: {{ $videojuego->puntuacion_personal }} }"
+                          x-ref="display"
+                          class="w-16 h-16 bg-violet-50 border border-violet-100 rounded-2xl flex items-center justify-center text-2xl font-bold text-violet-600 shrink-0">
+                        {{ number_format($videojuego->puntuacion_personal, 1) }}
+                    </span>
+                </div>
+                <div class="flex justify-between text-xs text-slate-400 mt-2 px-1">
+                    <span>0</span><span>5</span><span>10</span>
+                </div>
+            </div>
+
+            {{-- Notas por categoría --}}
+            <div class="bg-white border border-slate-100 rounded-2xl p-6">
+                <h2 class="text-sm font-semibold text-slate-700 mb-1">Puntuaciones por categoría</h2>
+                <p class="text-xs text-slate-400 mb-4">Opcionales · de 0 a 10</p>
+                <div class="grid grid-cols-2 gap-4">
+                    @foreach([
+                        'nota_grafica'     => ['Gráficos',    'squares-2x2'],
+                        'nota_historia'    => ['Historia',    'book-open'],
+                        'nota_jugabilidad' => ['Jugabilidad', 'cursor-arrow-rays'],
+                        'nota_duracion'    => ['Duración',    'clock'],
+                    ] as $campo => [$label, $icon])
+                        <div>
+                            <label class="block text-sm font-medium text-slate-600 mb-1.5 flex items-center gap-1.5">
+                                <x-dynamic-component :component="'heroicon-o-' . $icon" class="w-3.5 h-3.5 text-slate-400" />
+                                {{ $label }}
+                            </label>
+                            <input type="number" name="{{ $campo }}" step="0.1" min="0" max="10"
+                                   value="{{ $videojuego->$campo }}" placeholder="—"
+                                   class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-center font-bold text-slate-700 bg-slate-50 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition">
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+
+            {{-- Botones --}}
+            <div class="flex items-center justify-end gap-3 pt-2">
+                <a href="{{ route('videogames.index') }}"
+                   class="px-4 py-2.5 text-sm font-semibold text-slate-500 hover:text-slate-700 transition">
+                    Cancelar
+                </a>
+                <button type="submit"
+                        class="inline-flex items-center gap-2 bg-violet-600 hover:bg-violet-500 text-white px-6 py-2.5 rounded-xl text-sm font-semibold transition shadow-sm shadow-violet-200">
+                    <x-heroicon-o-check class="w-4 h-4" /> Guardar cambios
+                </button>
+            </div>
+        </form>
     </div>
+</div>
 </x-app-layout>

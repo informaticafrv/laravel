@@ -1,10 +1,11 @@
 <?php
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RankingController;
+use App\Http\Controllers\SearchController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\VideogameController;
-use App\Models\Videogame;
-use App\Models\Game;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\CommentController;
 
 // rutas públicas
@@ -15,17 +16,8 @@ Route::get('/', function () {
 // Middleware
 Route::middleware(['auth'])->group(function () {
 
-   //dashboard 
-    Route::get('/dashboard', function () {
-        $user_id = Auth::id();
-        $stats = [
-            'total' => Videogame::where('user_id', $user_id)->count(),
-            'jugando' => Videogame::where('user_id', $user_id)->where('estado', 'Jugando')->count(),
-            'completados' => Videogame::where('user_id', $user_id)->where('estado', 'Completado')->count(),
-        ];
-        $ultimosJuegosGlobales = Game::latest()->take(5)->get();
-        return view('dashboard', compact('ultimosJuegosGlobales', 'stats'));
-    })->name('dashboard');
+    //dashboard
+    Route::get('/dashboard', [VideogameController::class, 'dashboard'])->name('dashboard');
 
     //biblioteca y catálogo
     Route::get('/biblioteca', [VideogameController::class, 'index'])->name('videogames.index');
@@ -42,6 +34,23 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/games/{game}/comments', [CommentController::class, 'store'])->name('comments.store');
     //logros
     Route::post('/achievements/{id}/toggle', [VideogameController::class, 'toggleAchievement'])->name('achievements.toggle');
+
+    //rankings
+    Route::get('/rankings', [RankingController::class, 'index'])->name('rankings');
+
+    //búsqueda global
+    Route::get('/buscar', [SearchController::class, 'index'])->name('search');
+
+    //perfil público y seguir usuarios
+    Route::get('/usuarios/{user}', [UserController::class, 'show'])->name('users.show');
+    Route::post('/usuarios/{user}/seguir', [UserController::class, 'follow'])->name('users.follow');
+    Route::delete('/usuarios/{user}/seguir', [UserController::class, 'unfollow'])->name('users.unfollow');
+
+    //notificaciones
+    Route::get('/notificaciones', [NotificationController::class, 'index'])->name('notifications.index');
+
+    //exportar biblioteca a PDF
+    Route::get('/biblioteca/exportar', [VideogameController::class, 'exportPdf'])->name('videogames.export');
 
     //rutas de perfil de usuario
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

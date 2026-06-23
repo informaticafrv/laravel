@@ -1,176 +1,258 @@
 <x-app-layout>
-    <div class="py-12 bg-gray-50 min-h-screen font-sans">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            
-            <div class="bg-white rounded-[3rem] shadow-xl overflow-hidden border border-gray-100 mb-12">
-                <div class="flex flex-col md:flex-row">
-                    <div class="md:w-1/3 bg-gray-100">
+<div class="bg-slate-50 min-h-screen">
+
+    {{-- Portada hero --}}
+    <div class="relative bg-slate-900 overflow-hidden">
+        @if($juego->portada_url || $juego->portada)
+            <div class="absolute inset-0 opacity-20 blur-xl scale-110">
+                <img src="{{ $juego->portada_url ?? asset('storage/' . $juego->portada) }}"
+                     class="w-full h-full object-cover">
+            </div>
+        @endif
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="flex flex-col sm:flex-row gap-8 items-start">
+
+                {{-- Portada --}}
+                <div class="w-40 sm:w-52 shrink-0">
+                    <div class="aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl shadow-black/60 bg-slate-800">
                         @if($juego->portada_url)
-                            <img src="{{ $juego->portada_url }}" class="w-full h-full object-cover shadow-2xl">
+                            <img src="{{ $juego->portada_url }}" alt="{{ $juego->titulo }}" class="w-full h-full object-cover">
                         @elseif($juego->portada)
-                            <img src="{{ asset('storage/' . $juego->portada) }}" class="w-full h-full object-cover shadow-2xl">
+                            <img src="{{ asset('storage/' . $juego->portada) }}" alt="{{ $juego->titulo }}" class="w-full h-full object-cover">
                         @else
-                            <div class="flex items-center justify-center h-full text-gray-400 font-black uppercase italic text-center px-4 py-20">
-                                👾 <br> Sin Imagen
+                            <div class="w-full h-full flex items-center justify-center">
+                                <x-heroicon-o-squares-2x2 class="w-14 h-14 text-slate-600" />
                             </div>
                         @endif
                     </div>
-
-                    <div class="md:w-2/3 p-10 flex flex-col justify-between">
-                        <div>
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <span class="text-purple-600 font-black text-xs uppercase tracking-widest bg-purple-50 px-3 py-1 rounded-lg">{{ $juego->genero }}</span>
-                                    <h2 class="text-5xl font-black text-gray-800 tracking-tighter uppercase italic mt-2">{{ $juego->titulo }}</h2>
-                                </div>
-                                <div class="text-right">
-                                    <span class="block text-4xl font-black text-purple-600">⭐ {{ number_format($juego->notaMedia() ?? 0, 1) }}</span>
-                                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Nota Media Global</span>
-                                </div>
-                            </div>
-
-                            <p class="mt-8 text-gray-600 leading-relaxed text-lg italic">
-                                "Domina los desafíos de <span class="font-bold text-gray-800">{{ $juego->titulo }}</span> y conviértete en una leyenda de la comunidad."
-                            </p>
-
-                            @php
-                                $totalLogros = $juego->achievements->count();
-                                $misLogrosIds = auth()->user()->achievements->pluck('id')->toArray();
-                                $conseguidos = $juego->achievements->whereIn('id', $misLogrosIds)->count();
-                                $porcentaje = $totalLogros > 0 ? round(($conseguidos / $totalLogros) * 100) : 0;
-                                
-                                // NUEVO: Comprobamos si el usuario tiene este juego en su colección
-                                $misJuegosIds = auth()->user()->games->pluck('id')->toArray();
-                                $loTengoEnBiblioteca = in_array($juego->id, $misJuegosIds);
-                            @endphp
-
-                            <div class="mt-8 bg-white p-6 rounded-[2.5rem] border border-purple-100 shadow-sm relative overflow-hidden">
-                                <div class="relative z-10">
-                                    <div class="flex justify-between items-end mb-4">
-                                        <div>
-                                            <span class="text-[10px] font-black uppercase tracking-[0.2em] text-purple-500 block">Tu Nivel de Maestría</span>
-                                            <span class="text-2xl font-black text-gray-800 italic uppercase">Estado: {{ $porcentaje == 100 ? 'Completado 🏆' : 'En Progreso 🎮' }}</span>
-                                        </div>
-                                        <div class="text-right">
-                                            <span class="text-3xl font-black text-purple-600 tracking-tighter">{{ $porcentaje }}%</span>
-                                            <p class="text-[9px] font-bold text-gray-400 uppercase">{{ $conseguidos }} de {{ $totalLogros }} trofeos</p>
-                                        </div>
-                                    </div>
-                                    <div class="w-full bg-gray-100 rounded-full h-5 p-1 shadow-inner border border-gray-50">
-                                        <div class="bg-gradient-to-r from-purple-600 via-indigo-500 to-purple-400 h-full rounded-full transition-all duration-1000 relative" 
-                                             style="width: <?php echo $porcentaje; ?>%;">
-                                            <div class="absolute top-0 left-0 w-full h-full bg-white/20 rounded-full"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div x-data="{ openAchievements: false }" class="mt-10">
-                            <div class="flex flex-wrap gap-4">
-                                <button @click="openAchievements = !openAchievements" 
-                                    class="flex items-center gap-3 bg-gray-900 hover:bg-black text-white px-8 py-4 rounded-2xl font-black uppercase text-xs tracking-widest transition-all shadow-lg active:scale-95">
-                                    <span x-text="openAchievements ? '❌ Cerrar Logros' : '🏆 Ver Logros del Juego'"></span>
-                                </button>
-                                <a href="{{ route('videogames.catalogo') }}" class="flex items-center gap-3 bg-white border-2 border-gray-100 hover:border-purple-200 text-gray-600 px-8 py-4 rounded-2xl font-black uppercase text-xs tracking-widest transition-all shadow-sm">
-                                    ⬅️ Volver
-                                </a>
-                            </div>
-
-                            <div x-show="openAchievements" x-transition class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-                                @forelse($juego->achievements as $index => $logro)
-                                    @php 
-                                        $esMio = in_array($logro->id, $misLogrosIds);
-                                        $colorClass = match(true) {
-                                            $index + 1 <= 8 => 'from-orange-400 to-orange-700', // Bronce
-                                            $index + 1 <= 14 => 'from-slate-300 to-slate-500',  // Plata
-                                            $index + 1 <= 19 => 'from-yellow-300 to-yellow-600', // Oro
-                                            default => 'from-indigo-400 to-purple-600 animate-pulse', // Platino
-                                        };
-                                        $bgBadge = $esMio ? 'bg-white' : 'bg-gray-200 grayscale opacity-40';
-                                    @endphp
-
-                                    <div class="relative flex items-center justify-between p-5 rounded-[2rem] border-2 transition-all duration-300 {{ $esMio ? 'bg-white border-purple-100 shadow-xl scale-[1.02]' : 'bg-gray-50 border-transparent opacity-75' }}">
-                                        <div class="absolute -top-3 left-6 px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-tighter text-white bg-gradient-to-r {{ $colorClass }}">
-                                            {{ ($index + 1 <= 8) ? 'Bronce' : (($index + 1 <= 14) ? 'Plata' : (($index + 1 <= 19) ? 'Oro' : 'Platino')) }}
-                                        </div>
-
-                                        <div class="flex items-center gap-5">
-                                            <div class="w-16 h-16 shrink-0 rounded-2xl p-1 bg-gradient-to-br {{ $colorClass }} shadow-lg">
-                                                <div class="w-full h-full rounded-xl overflow-hidden {{ $bgBadge }} flex items-center justify-center">
-                                                    <img src="{{ $logro->imagen_url }}" class="w-10 h-10 object-contain p-1">
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <h4 class="font-black text-gray-800 text-sm uppercase tracking-tight">{{ $logro->nombre }}</h4>
-                                                <p class="text-[10px] text-gray-500 font-bold leading-snug uppercase">{{ Str::limit($logro->descripcion, 45) }}</p>
-                                            </div>
-                                        </div>
-
-                                        {{-- NUEVO: Mostramos el botón SOLO si el juego está en la biblioteca --}}
-                                        @if($loTengoEnBiblioteca)
-                                            <form action="{{ route('achievements.toggle', $logro->id) }}" method="POST">
-                                                @csrf
-                                                <button type="submit" class="p-3 rounded-2xl {{ $esMio ? 'bg-purple-600 text-white shadow-lg' : 'bg-white text-gray-300 border border-gray-100 hover:text-purple-500' }} transition-colors">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="{{ $esMio ? 'M5 13l4 4L19 7' : 'M12 4v16m8-8H4' }}" />
-                                                    </svg>
-                                                </button>
-                                            </form>
-                                        @else
-                                            {{-- Si no lo tiene, mostramos un candado --}}
-                                            <div class="p-3 text-gray-300" title="Añade el juego a tu colección para marcar logros">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
-                                                </svg>
-                                            </div>
-                                        @endif
-
-                                    </div>
-                                @empty
-                                    <p class="text-center col-span-full text-gray-400 font-black uppercase text-xs py-10">Sin logros.</p>
-                                @endforelse
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="max-w-4xl mx-auto">
-                <div class="flex items-center gap-4 mb-8">
-                    <h3 class="text-2xl font-black text-gray-800 italic uppercase tracking-tighter">Comunidad</h3>
-                    <div class="h-[2px] flex-1 bg-gray-200"></div>
                 </div>
 
-                @auth
-                <form action="{{ route('comments.store', $juego->id) }}" method="POST" class="mb-12 bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100">
-                    @csrf
-                    <textarea name="contenido" rows="3" class="w-full border-none bg-gray-50 rounded-2xl focus:ring-2 focus:ring-purple-500 p-4 font-bold" placeholder="¿Qué te parece este juego?"></textarea>
-                    <div class="flex justify-end mt-4">
-                        <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-black py-3 px-10 rounded-xl text-xs uppercase tracking-widest shadow-lg">Publicar</button>
-                    </div>
-                </form>
-                @endauth
+                {{-- Info --}}
+                <div class="flex-1 py-2">
+                    <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-violet-300 bg-violet-900/40 border border-violet-700/40 rounded-full px-3 py-1 mb-3">
+                        <x-heroicon-s-tag class="w-3.5 h-3.5" /> {{ $juego->genero }}
+                    </span>
+                    <h1 class="text-4xl font-bold text-white tracking-tight leading-tight">{{ $juego->titulo }}</h1>
 
-                <div class="space-y-6">
-                    @forelse($juego->comments as $comment)
-                    <div class="flex gap-6 p-6 bg-white rounded-[2rem] border border-gray-50 shadow-sm transition-all hover:shadow-md">
-                        <div class="w-14 h-14 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl flex items-center justify-center text-white font-black text-xl shrink-0 shadow-lg shadow-purple-100">
-                            {{ substr($comment->user->name, 0, 1) }}
+                    {{-- Nota global --}}
+                    @php $notaGlobal = $juego->notaMedia(); @endphp
+                    @if($notaGlobal)
+                        <div class="flex items-center gap-2 mt-4">
+                            <x-heroicon-s-star class="w-5 h-5 text-amber-400" />
+                            <span class="text-2xl font-bold text-white">{{ number_format($notaGlobal, 1) }}</span>
+                            <span class="text-slate-400 text-sm">/ 10 · nota media global</span>
                         </div>
-                        <div class="flex-1">
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="font-black text-gray-800 uppercase text-xs tracking-wider">{{ $comment->user->name }}</span>
-                                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{{ $comment->created_at->diffForHumans() }}</span>
-                            </div>
-                            <p class="text-gray-600 leading-relaxed font-medium">{{ $comment->contenido }}</p>
+                    @endif
+
+                    {{-- Barra de logros --}}
+                    @php
+                        $totalLogros = $juego->achievements->count();
+                        $conseguidos = $juego->achievements->whereIn('id', $misLogrosIds)->count();
+                        $porcentaje  = $totalLogros > 0 ? round(($conseguidos / $totalLogros) * 100) : 0;
+                    @endphp
+
+                    <div class="mt-6 max-w-sm">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Logros</span>
+                            <span class="text-xs font-bold text-violet-300">{{ $conseguidos }}/{{ $totalLogros }} · <?php echo $porcentaje; ?>%</span>
+                        </div>
+                        <div class="w-full bg-slate-700 rounded-full h-2">
+                            <div class="bg-gradient-to-r from-violet-500 to-violet-400 h-2 rounded-full transition-all duration-700"
+                                 style="width: <?php echo $porcentaje; ?>%"></div>
                         </div>
                     </div>
-                    @empty
-                    <p class="text-center text-gray-400 font-bold py-10">Sé el primero en comentar.</p>
-                    @endforelse
+
+                    {{-- Acciones --}}
+                    <div class="flex items-center flex-wrap gap-3 mt-8">
+                        <a href="{{ route('videogames.catalogo') }}"
+                           class="inline-flex items-center gap-2 border border-slate-700 text-slate-300 hover:text-white hover:border-slate-600 px-4 py-2 rounded-xl text-sm font-semibold transition">
+                            <x-heroicon-o-arrow-left class="w-4 h-4" /> Catálogo
+                        </a>
+                        @if($loTengoEnBiblioteca)
+                            <span class="inline-flex items-center gap-2 bg-emerald-600/20 border border-emerald-600/30 text-emerald-400 px-4 py-2 rounded-xl text-sm font-semibold">
+                                <x-heroicon-s-check-circle class="w-4 h-4" /> En tu biblioteca
+                            </span>
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        {{-- Columna principal --}}
+        <div class="lg:col-span-2 space-y-8">
+
+            {{-- Logros --}}
+            <div x-data="{ open: false }">
+                <button @click="open = !open"
+                        class="w-full flex items-center justify-between bg-white border border-slate-100 rounded-2xl px-6 py-4 hover:border-violet-200 transition group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 bg-amber-50 rounded-xl flex items-center justify-center">
+                            <x-heroicon-s-trophy class="w-5 h-5 text-amber-500" />
+                        </div>
+                        <div class="text-left">
+                            <p class="font-semibold text-slate-900 text-sm">Logros del juego</p>
+                            <p class="text-xs text-slate-400">{{ $conseguidos }} de {{ $totalLogros }} desbloqueados</p>
+                        </div>
+                    </div>
+                    <span :class="open ? 'rotate-180' : ''" class="transition-transform duration-200 inline-flex">
+                        <x-heroicon-o-chevron-down class="w-5 h-5 text-slate-400" />
+                    </span>
+                </button>
+
+                <div x-show="open" x-transition class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    @forelse($juego->achievements as $index => $logro)
+                        @php
+                            $esMio = in_array($logro->id, $misLogrosIds);
+                            $tier = match(true) {
+                                $index + 1 <= 8  => ['Bronce',  'from-orange-400 to-orange-600',        'text-orange-700 bg-orange-50 border-orange-200'],
+                                $index + 1 <= 14 => ['Plata',   'from-slate-300 to-slate-500',           'text-slate-700 bg-slate-100 border-slate-300'],
+                                $index + 1 <= 19 => ['Oro',     'from-yellow-400 to-yellow-600',         'text-yellow-700 bg-yellow-50 border-yellow-200'],
+                                default          => ['Platino', 'from-violet-500 to-violet-700',         'text-violet-700 bg-violet-50 border-violet-200'],
+                            };
+                        @endphp
+                        <div class="flex items-center gap-3 p-4 bg-white border rounded-xl transition
+                                    {{ $esMio ? 'border-violet-200 shadow-sm shadow-violet-100' : 'border-slate-100 opacity-60' }}">
+                            <div class="w-12 h-12 shrink-0 rounded-xl p-0.5 bg-gradient-to-br {{ $tier[1] }}">
+                                <div class="w-full h-full rounded-[10px] overflow-hidden bg-white flex items-center justify-center">
+                                    <img src="{{ $logro->imagen_url }}" class="w-8 h-8 object-contain {{ $esMio ? '' : 'grayscale' }}">
+                                </div>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-1.5 mb-0.5">
+                                    <span class="text-[10px] font-bold border rounded px-1.5 py-px {{ $tier[2] }}">{{ $tier[0] }}</span>
+                                </div>
+                                <p class="text-sm font-semibold text-slate-800 truncate">{{ $logro->nombre }}</p>
+                                <p class="text-[11px] text-slate-400 truncate">{{ Str::limit($logro->descripcion, 40) }}</p>
+                            </div>
+                            @if($loTengoEnBiblioteca)
+                                <form action="{{ route('achievements.toggle', $logro->id) }}" method="POST">
+                                    @csrf
+                                    <button type="submit"
+                                            class="w-8 h-8 rounded-lg flex items-center justify-center transition shrink-0
+                                                   {{ $esMio ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-400 hover:bg-violet-100 hover:text-violet-600' }}">
+                                        @if($esMio)
+                                            <x-heroicon-s-check class="w-4 h-4" />
+                                        @else
+                                            <x-heroicon-o-plus class="w-4 h-4" />
+                                        @endif
+                                    </button>
+                                </form>
+                            @else
+                                <x-heroicon-o-lock-closed class="w-4 h-4 text-slate-300 shrink-0" />
+                            @endif
+                        </div>
+                    @empty
+                        <p class="col-span-full text-center text-slate-400 py-8 text-sm">Sin logros disponibles.</p>
+                    @endforelse
+                </div>
+            </div>
+
+            {{-- Comentarios --}}
+            <div>
+                <h2 class="text-lg font-bold text-slate-900 mb-4">Comentarios de la comunidad</h2>
+
+                @auth
+                <form action="{{ route('comments.store', $juego->id) }}" method="POST" class="mb-6">
+                    @csrf
+                    <div class="bg-white border border-slate-100 rounded-2xl p-4">
+                        <textarea name="contenido" rows="3"
+                                  class="w-full bg-transparent border-0 resize-none focus:ring-0 text-sm text-slate-700 placeholder-slate-400 p-0"
+                                  placeholder="Comparte tu opinión sobre {{ $juego->titulo }}..."></textarea>
+                        <div class="flex justify-end pt-3 border-t border-slate-50">
+                            <button type="submit"
+                                    class="bg-violet-600 hover:bg-violet-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
+                                Publicar comentario
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                @endauth
+
+                <div class="space-y-3">
+                    @forelse($juego->comments as $comment)
+                        <div class="flex gap-4 bg-white border border-slate-100 rounded-2xl p-5">
+                            <div class="w-9 h-9 rounded-xl bg-violet-100 flex items-center justify-center shrink-0">
+                                <span class="text-sm font-bold text-violet-700">{{ strtoupper(substr($comment->user->name, 0, 1)) }}</span>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-1.5">
+                                    <span class="text-sm font-semibold text-slate-800">{{ $comment->user->name }}</span>
+                                    <span class="text-xs text-slate-400">{{ $comment->created_at->diffForHumans() }}</span>
+                                </div>
+                                <p class="text-sm text-slate-600 leading-relaxed">{{ $comment->contenido }}</p>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="bg-white border border-dashed border-slate-200 rounded-2xl p-10 text-center">
+                            <x-heroicon-o-chat-bubble-left-ellipsis class="w-8 h-8 text-slate-300 mx-auto mb-2" />
+                            <p class="text-slate-400 text-sm">Sé el primero en comentar</p>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+
+        {{-- Sidebar --}}
+        <div class="space-y-5">
+            {{-- Info del juego --}}
+            <div class="bg-white border border-slate-100 rounded-2xl p-5">
+                <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">Información</h3>
+                <dl class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <dt class="text-sm text-slate-500 flex items-center gap-2">
+                            <x-heroicon-o-tag class="w-4 h-4" /> Género
+                        </dt>
+                        <dd class="text-sm font-semibold text-slate-800">{{ $juego->genero }}</dd>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <dt class="text-sm text-slate-500 flex items-center gap-2">
+                            <x-heroicon-o-users class="w-4 h-4" /> En bibliotecas
+                        </dt>
+                        <dd class="text-sm font-semibold text-slate-800">{{ $juego->videogames()->count() }}</dd>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <dt class="text-sm text-slate-500 flex items-center gap-2">
+                            <x-heroicon-o-trophy class="w-4 h-4" /> Total logros
+                        </dt>
+                        <dd class="text-sm font-semibold text-slate-800">{{ $totalLogros }}</dd>
+                    </div>
+                </dl>
+            </div>
+
+            {{-- Tu progreso --}}
+            @if($loTengoEnBiblioteca)
+                @php $miRegistro = Auth::user()->games->firstWhere('id', $juego->id); @endphp
+                @if($miRegistro)
+                <div class="bg-violet-50 border border-violet-100 rounded-2xl p-5">
+                    <h3 class="text-xs font-semibold text-violet-500 uppercase tracking-wider mb-4">Tu registro</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-slate-600">Estado</span>
+                            <span class="text-sm font-semibold text-slate-800">{{ $miRegistro->pivot->estado }}</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-slate-600">Plataforma</span>
+                            <span class="text-sm font-semibold text-slate-800">{{ $miRegistro->pivot->plataforma }}</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-slate-600">Tu nota</span>
+                            <span class="text-xl font-bold text-violet-600">{{ number_format($miRegistro->pivot->puntuacion_personal, 1) }}</span>
+                        </div>
+                    </div>
+                    @if($vidId)
+                    <a href="{{ route('videogames.edit', $vidId) }}"
+                       class="mt-4 w-full flex items-center justify-center gap-2 border border-violet-200 text-violet-700 hover:bg-violet-100 py-2 rounded-xl text-sm font-semibold transition">
+                        <x-heroicon-o-pencil class="w-4 h-4" /> Editar registro
+                    </a>
+                    @endif
+                </div>
+                @endif
+            @endif
+        </div>
+
+    </div>
+</div>
 </x-app-layout>

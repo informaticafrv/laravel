@@ -1,127 +1,203 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-black text-3xl text-gray-800 tracking-tighter italic">
-                MI <span class="text-purple-600">BIBLIOTECA</span>
-            </h2>
-            <div class="flex items-center gap-4">
-                <span class="bg-purple-100 text-purple-700 text-xs font-bold px-3 py-1 rounded-full border border-purple-200 shadow-sm">
-                    {{ $videojuegos->count() }} JUEGOS EN TOTAL
-                </span>
-                <a href="{{ route('videogames.create') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-xl shadow-md transition transform active:scale-95 uppercase text-xs tracking-widest">
-                    + AÑADIR JUEGO
-                </a>
-            </div>
-        </div>
-    </x-slot>
+<div class="bg-slate-50 min-h-screen">
 
-    <div class="py-12 bg-gray-50 min-h-screen">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            
-            <div class="flex flex-wrap gap-3 mb-8">
-                <button onclick="filtrarBiblioteca('todos', this)" class="filter-btn bg-purple-600 text-white px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-md transition-all">
-                    Todos
-                </button>
-                <button onclick="filtrarBiblioteca('Jugando', this)" class="filter-btn bg-white text-gray-600 border border-gray-100 px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-green-50 transition-all">
-                    🎮 Jugando
-                </button>
-                <button onclick="filtrarBiblioteca('Completado', this)" class="filter-btn bg-white text-gray-600 border border-gray-100 px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-purple-50 transition-all">
-                    🏆 Hechos
-                </button>
-                <button onclick="filtrarBiblioteca('Pendiente', this)" class="filter-btn bg-white text-gray-600 border border-gray-100 px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-100 transition-all">
-                    ⏳ Pendientes
-                </button>
-            </div>
-
-            <div class="bg-white shadow-xl rounded-3xl overflow-hidden border border-gray-200">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-gray-50 border-b border-gray-200 text-purple-600 font-bold uppercase text-xs tracking-widest">
-                            <th class="px-6 py-4">Visual</th>
-                            <th class="px-6 py-4">Título</th>
-                            <th class="px-6 py-4 text-center">Género</th>
-                            <th class="px-6 py-4 text-center">Plataforma</th>
-                            <th class="px-6 py-4 text-center">Estado</th>
-                            <th class="px-6 py-4 text-right">Nota</th>
-                            <th class="px-6 py-4 text-right">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabla-biblioteca" class="divide-y divide-gray-100">
-                        @foreach ($videojuegos as $juego)
-                        <tr class="fila-juego hover:bg-purple-50/50 transition-colors duration-200 text-gray-700" data-estado="{{ $juego->estado }}">
-                            <td class="px-6 py-4 text-center">
-                                {{-- PRIORIDAD DE IMAGEN: API -> LOCAL -> NADA --}}
-                                @if($juego->game->portada_url)
-                                    <img src="{{ $juego->game->portada_url }}" class="w-12 h-16 object-cover rounded-lg shadow-sm border border-gray-200 mx-auto">
-                                @elseif($juego->game->portada)
-                                    <img src="{{ asset('storage/' . $juego->game->portada) }}" class="w-12 h-16 object-cover rounded-lg shadow-sm border border-gray-200 mx-auto">
-                                @else
-                                    <div class="w-12 h-16 bg-gray-100 rounded-lg flex items-center justify-center text-[10px] text-gray-400 border border-gray-200 uppercase font-bold text-center mx-auto">Sin imagen</div>
-                                @endif
-                            </td>
-                            <td class="px-6 py-4 font-bold text-gray-800 italic">
-                                <a href="{{ route('games.show', $juego->game->id) }}" class="hover:text-purple-600 transition-colors">{{ $juego->game->titulo }}</a>
-                            </td>
-                            <td class="px-6 py-4 text-center">
-                                <span class="px-3 py-1 rounded-lg text-[10px] font-bold uppercase bg-indigo-50 text-indigo-700 border border-indigo-100">
-                                    {{ $juego->game->genero }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 text-center text-gray-500 font-medium">{{ $juego->plataforma }}</td>
-                            <td class="px-6 py-4 text-center">
-                                @php
-                                    $colores = [
-                                        'Pendiente' => 'bg-gray-100 text-gray-600 border-gray-200',
-                                        'Jugando' => 'bg-green-50 text-green-700 border-green-200',
-                                        'Completado' => 'bg-purple-50 text-purple-700 border-purple-200',
-                                        'Abandonado' => 'bg-red-50 text-red-700 border-red-200'
-                                    ];
-                                @endphp
-                                <span class="px-3 py-1 rounded-lg text-[10px] font-bold uppercase border {{ $colores[$juego->estado] ?? 'bg-gray-50' }}">
-                                    {{ $juego->estado }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 text-right">
-                                <span class="font-mono text-lg font-black {{ $juego->puntuacion_personal >= 8 ? 'text-purple-600' : 'text-gray-600' }}">
-                                    {{ number_format($juego->puntuacion_personal, 1) }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 text-right">
-                                <div class="flex justify-end gap-3 text-lg">
-                                    <a href="{{ route('videogames.edit', $juego->id) }}" class="text-gray-400 hover:text-indigo-600 transition-colors">✏️</a>
-                                    <form action="{{ route('videogames.destroy', $juego->id) }}" method="POST" onsubmit="return confirm('¿Borrar de la biblioteca?')">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" class="text-gray-400 hover:text-red-500 transition-colors">🗑️</button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+    {{-- Header --}}
+    <div class="bg-white border-b border-slate-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Mi Biblioteca</h1>
+                    <p class="text-sm text-slate-400 mt-0.5">{{ $videojuegos->count() }} {{ Str::plural('juego', $videojuegos->count()) }} en tu colección</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <a href="{{ route('videogames.export') }}"
+                       class="inline-flex items-center gap-2 border border-slate-200 text-slate-600 hover:text-slate-900 hover:border-slate-300 px-3.5 py-2 rounded-xl text-sm font-semibold transition">
+                        <x-heroicon-o-arrow-down-tray class="w-4 h-4" /> PDF
+                    </a>
+                    <a href="{{ route('videogames.create') }}"
+                       class="inline-flex items-center gap-2 bg-violet-600 hover:bg-violet-500 text-white px-4 py-2 rounded-xl text-sm font-semibold transition shadow-sm shadow-violet-200">
+                        <x-heroicon-o-plus class="w-4 h-4" /> Añadir juego
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 
-    <script>
-        function filtrarBiblioteca(estado, btn) {
-            const filas = document.querySelectorAll('.fila-juego');
-            const botones = document.querySelectorAll('.filter-btn');
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-            botones.forEach(b => {
-                b.classList.remove('bg-purple-600', 'text-white', 'shadow-md');
-                b.classList.add('bg-white', 'text-gray-600', 'border', 'border-gray-100');
-            });
-            btn.classList.add('bg-purple-600', 'text-white', 'shadow-md');
-            btn.classList.remove('bg-white', 'text-gray-600', 'border', 'border-gray-100');
+        {{-- Modal de confirmación de borrado --}}
+        <div x-data="deleteModal()"
+             @open-delete.window="open($event.detail)"
+             x-show="show"
+             x-cloak
+             class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6"
+                 @click.away="show = false"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 scale-95 translate-y-4 sm:translate-y-0"
+                 x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                 x-transition:leave="transition ease-in duration-150"
+                 x-transition:leave-start="opacity-100 scale-100"
+                 x-transition:leave-end="opacity-0 scale-95">
+                <div class="flex items-start gap-4 mb-6">
+                    <div class="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center shrink-0">
+                        <x-heroicon-s-trash class="w-5 h-5 text-red-500" />
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-slate-900 text-base">Eliminar juego</h3>
+                        <p class="text-sm text-slate-500 mt-1">
+                            ¿Seguro que quieres eliminar <span class="font-semibold text-slate-700" x-text="gameTitle"></span> de tu biblioteca? Esta acción no se puede deshacer.
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 justify-end">
+                    <button @click="show = false"
+                            class="px-4 py-2 text-sm font-semibold text-slate-500 hover:text-slate-700 transition">
+                        Cancelar
+                    </button>
+                    <form :action="formAction" method="POST">
+                        @csrf @method('DELETE')
+                        <button type="submit"
+                                class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded-xl text-sm font-semibold transition shadow-sm">
+                            <x-heroicon-o-trash class="w-4 h-4" /> Eliminar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
 
-            filas.forEach(fila => {
-                if (estado === 'todos' || fila.getAttribute('data-estado') === estado) {
-                    fila.style.display = '';
-                } else {
-                    fila.style.display = 'none';
-                }
-            });
+        @if($videojuegos->isEmpty())
+            <div class="bg-white border border-dashed border-slate-200 rounded-2xl p-20 text-center">
+                <x-heroicon-o-bookmark class="w-12 h-12 text-slate-300 mx-auto mb-4" />
+                <p class="text-slate-600 font-semibold text-lg">Tu biblioteca está vacía</p>
+                <p class="text-slate-400 text-sm mt-1">Empieza añadiendo tu primer juego</p>
+                <a href="{{ route('videogames.create') }}"
+                   class="inline-flex items-center gap-2 mt-6 bg-violet-600 hover:bg-violet-500 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition shadow-sm">
+                    <x-heroicon-o-plus class="w-4 h-4" /> Añadir juego
+                </a>
+            </div>
+        @else
+            {{-- Tabla --}}
+            <div class="bg-white border border-slate-100 rounded-2xl shadow-sm overflow-hidden">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b border-slate-100 bg-slate-50/80">
+                            <th class="text-left px-6 py-3.5 text-xs font-semibold text-slate-400 uppercase tracking-wider">Juego</th>
+                            <th class="text-left px-4 py-3.5 text-xs font-semibold text-slate-400 uppercase tracking-wider hidden sm:table-cell">Plataforma</th>
+                            <th class="text-left px-4 py-3.5 text-xs font-semibold text-slate-400 uppercase tracking-wider hidden md:table-cell">Estado</th>
+                            <th class="text-center px-4 py-3.5 text-xs font-semibold text-slate-400 uppercase tracking-wider">Nota</th>
+                            <th class="text-right px-6 py-3.5 text-xs font-semibold text-slate-400 uppercase tracking-wider">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-50">
+                        @foreach($videojuegos as $videojuego)
+                            @php
+                                $estadoConfig = [
+                                    'Completado' => ['bg' => 'bg-emerald-50 text-emerald-700 border-emerald-200',  'icon' => 'check-badge'],
+                                    'Jugando'    => ['bg' => 'bg-violet-50 text-violet-700 border-violet-200',     'icon' => 'play-circle'],
+                                    'Pendiente'  => ['bg' => 'bg-slate-100 text-slate-600 border-slate-200',       'icon' => 'clock'],
+                                    'Abandonado' => ['bg' => 'bg-red-50 text-red-600 border-red-200',             'icon' => 'x-circle'],
+                                ];
+                                $est = $estadoConfig[$videojuego->estado] ?? $estadoConfig['Pendiente'];
+                                $nota = $videojuego->puntuacion_personal;
+                                $notaColor = $nota >= 8 ? 'text-emerald-600' : ($nota >= 6 ? 'text-amber-500' : 'text-red-500');
+                            @endphp
+                            <tr class="hover:bg-slate-50/60 transition group">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 shrink-0 rounded-xl overflow-hidden bg-slate-100">
+                                            @if($videojuego->game->portada_url)
+                                                <img src="{{ $videojuego->game->portada_url }}" alt="" class="w-full h-full object-cover">
+                                            @elseif($videojuego->game->portada)
+                                                <img src="{{ asset('storage/' . $videojuego->game->portada) }}" alt="" class="w-full h-full object-cover">
+                                            @else
+                                                <div class="w-full h-full flex items-center justify-center">
+                                                    <x-heroicon-o-squares-2x2 class="w-5 h-5 text-slate-300" />
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <div>
+                                            <a href="{{ route('games.show', $videojuego->game->id) }}"
+                                               class="font-semibold text-slate-900 hover:text-violet-700 transition text-sm leading-tight">
+                                                {{ $videojuego->game->titulo }}
+                                            </a>
+                                            <p class="text-xs text-slate-400 mt-0.5">{{ $videojuego->game->genero }}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-4 hidden sm:table-cell">
+                                    <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 bg-slate-100 rounded-lg px-2.5 py-1">
+                                        <x-heroicon-o-computer-desktop class="w-3.5 h-3.5" />
+                                        {{ $videojuego->plataforma }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-4 hidden md:table-cell">
+                                    <span class="inline-flex items-center gap-1.5 text-xs font-semibold border rounded-full px-2.5 py-1 {{ $est['bg'] }}">
+                                        <x-dynamic-component :component="'heroicon-s-' . $est['icon']" class="w-3.5 h-3.5" />
+                                        {{ $videojuego->estado }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-4 text-center">
+                                    <span class="text-2xl font-bold {{ $notaColor }}">{{ number_format($nota, 1) }}</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center justify-end gap-2">
+                                        <a href="{{ route('videogames.edit', $videojuego->id) }}"
+                                           class="p-2 rounded-lg text-slate-400 hover:text-violet-600 hover:bg-violet-50 transition">
+                                            <x-heroicon-o-pencil class="w-4 h-4" />
+                                        </a>
+                                        <button type="button"
+                                                @click="$dispatch('open-delete', { action: '{{ route('videogames.destroy', $videojuego->id) }}', title: '{{ addslashes($videojuego->game->titulo) }}' })"
+                                                class="p-2 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition">
+                                            <x-heroicon-o-trash class="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            {{-- Resumen de estadísticas --}}
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
+                @php
+                    $resumen = [
+                        ['label' => 'Completados', 'value' => $videojuegos->where('estado','Completado')->count(), 'color' => 'text-emerald-600'],
+                        ['label' => 'Jugando',     'value' => $videojuegos->where('estado','Jugando')->count(),    'color' => 'text-violet-600'],
+                        ['label' => 'Pendientes',  'value' => $videojuegos->where('estado','Pendiente')->count(),  'color' => 'text-slate-600'],
+                        ['label' => 'Nota media',  'value' => number_format($videojuegos->avg('puntuacion_personal') ?? 0, 1), 'color' => 'text-amber-600'],
+                    ];
+                @endphp
+                @foreach($resumen as $r)
+                <div class="bg-white border border-slate-100 rounded-2xl p-4 text-center">
+                    <p class="text-2xl font-bold {{ $r['color'] }}">{{ $r['value'] }}</p>
+                    <p class="text-xs text-slate-400 font-medium mt-0.5">{{ $r['label'] }}</p>
+                </div>
+                @endforeach
+            </div>
+        @endif
+    </div>
+</div>
+
+<script>
+function deleteModal() {
+    return {
+        show: false,
+        formAction: '',
+        gameTitle: '',
+        open(detail) {
+            this.formAction = detail.action;
+            this.gameTitle  = detail.title;
+            this.show = true;
         }
-    </script>
+    }
+}
+</script>
 </x-app-layout>
